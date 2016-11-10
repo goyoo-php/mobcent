@@ -53,7 +53,6 @@ class GetProfileGroupAction extends MobcentAction {
             }
         }
         if ($type == 'reg') {
-            ProfileUtils::init();
             $old = $profilegroup;
             $set = $this->_getRegSetting();
             unset($profilegroup);
@@ -64,7 +63,7 @@ class GetProfileGroupAction extends MobcentAction {
                     unset($set[$k]);
                 }
                 $profilegroup['reg']['field'][$k] = $k;
-//                $_G['cache']['profilesetting'][$k]['required'] = $s['must'];
+                $_G['cache']['profilesetting'][$k]['required'] = $s['must'];
             }
         }
         $temp = '';
@@ -102,7 +101,7 @@ class GetProfileGroupAction extends MobcentAction {
         $return = array();
         $userAvatar['name'] = WebUtils::t('头像');
         $userAvatar['fieldid'] = 'avatar';
-        $userAvatar['required'] = 0;
+        $userAvatar['required'] = 1;
         $userAvatar['unchangeable'] = 0;
         $userAvatar['description'] = '';
         $userAvatar['type'] = 'avatar';
@@ -111,7 +110,7 @@ class GetProfileGroupAction extends MobcentAction {
         $return[] = $userAvatar;
         $sign['name'] = WebUtils::t('签名');
         $sign['fieldid'] = 'sign';
-        $sign['required'] = 0;
+        $sign['required'] = 1;
         $sign['unchangeable'] = 0;
         $sign['description'] = '';
         $sign['type'] = 'sign';

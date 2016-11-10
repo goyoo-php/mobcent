@@ -17,6 +17,7 @@ class NewsViewAction extends MobcentAction {
     public function run($json) {
         $res = $this->initWebApiArray();
 
+//        $json = '{"aid": 1, "page": 1}';
         $json = rawurldecode($json);
         $json = WebUtils::jsonDecode($json);
 

@@ -772,7 +772,7 @@ class ForumUtils {
             '), $postMsg
             );
             // 处理网络图片和客户端自带表情
-            $postMsg = preg_replace_callback('/<img[^>]*?id=[^>]*?(src|file)="(.+?)".*?\/>/', create_function('$matches', '
+            $postMsg = preg_replace_callback('/<img.*?id[^>]*?(src|file)="(.+?)".*?\/>/', create_function('$matches', '
                 $image = WebUtils::getHttpFileName($matches[2]);
                 // 处理给手机客户端的表情图片
                 if (strpos($image, "/app/data/phiz/") !== false) {
@@ -1027,41 +1027,58 @@ class ForumUtils {
      * @param string $video 视频地址
      * @return string
      */
-    public function transVideoUrl($url) {
+    public function transVideoUrl($video) {
+        $videoUrl = $video;
         // 转换优酷 .swf
-        preg_match('/^http\:\/\/player\.youku\.com\/player\.php[0-9a-z\/_-]*\/sid\/([0-9a-z_-]+)/i', $url, $tempMatches);
+        $tempMatches = array();
+        preg_match('/^http\:\/\/player\.youku\.com\/player\.php[0-9a-z\/_-]*\/sid\/([0-9a-z_-]+)/i', $video, $tempMatches);
         if (empty($tempMatches)) {
-            preg_match('/^http\:\/\/v\.youku\.com\/v_show\/id_([0-9a-z_-]+)/i', $url, $tempMatches);
+            preg_match('/^http\:\/\/v\.youku\.com\/v_show\/id_([0-9a-z_-]+)/i', $video, $tempMatches);
         }
         if (!empty($tempMatches)) {
-            return 'http://player.youku.com/embed/' . $tempMatches[1];
-        }
-        // 转换爱奇艺 .swf
-        preg_match("#^http://player\.video\.qiyi\.com/.+?_(\w+?)\.swf#s", $url, $tempMatches);
-        if (!empty($tempMatches)) {
-            return "http://www.iqiyi.com/v_{$tempMatches[1]}.html";
-        }
-        //土豆
-        if(stripos($url,'tudou') !== false)
-        {
-            $todouApi='http://api.tudou.com/v6/tool/repaste?app_key=da7bee320651afb7&format=xml&url='.$url;
-            return (string)simplexml_load_file($todouApi)->itemInfo->outerGPlayerUrl;
+            $videoUrl = 'http://player.youku.com/embed/' . $tempMatches[1];
         }
 
-        //腾讯视频
-        preg_match("#^http://static\.video\.qq\.com/TPout\.swf\?vid=(\w+)#s", $url, $tempMatches);
+        // 转换爱奇艺 .swf
+        $tempMatches = array();
+        preg_match("#^http://player\.video\.qiyi\.com/.+?_(\w+?)\.swf#s", $video, $tempMatches);
         if (!empty($tempMatches)) {
-            return 'http://v.qq.com/iframe/player.html?vid=' . $tempMatches[1] . '&auto=0';
+            $videoUrl = "http://www.iqiyi.com/v_{$tempMatches[1]}.html";
+        }
+
+        //土豆
+        $tempMatches = array();
+        preg_match('/^http\:\/\/www\.tudou\.com\/(?:a|l)\/([0-9a-z_-]+)\/.+iid\=(\d+)/i', $video, $tempMatches);
+        if (!empty($tempMatches)) {
+            $url = 'http://www.tudou.com/v/' . $tempMatches[2] . '/v.swf';
+            self::url($url, $header);
+            $parse = parse_url($header['Location']);
+            self::parse_str($parse['query'], $arr);
+            if (empty($header['Location']) || empty($parse['query']) || empty($arr['snap_pic'])) {
+                //break;
+            } else {
+                $videoUrl = 'http://www.tudou.com/programs/view/html5embed.action?type=2&code=' . $arr['code'] . '&lcode=' . $tempMatches[1];
+            }
+        }
+
+        //腾讯视频 
+        $tempMatches = array();
+        preg_match("#^http://static\.video\.qq\.com/TPout\.swf\?vid=(\w+)#s", $video, $tempMatches);
+        if (!empty($tempMatches)) {
+            $videoUrl = 'http://v.qq.com/iframe/player.html?vid=' . $tempMatches[1] . '&auto=0';
         }
 
         //56
-        preg_match('/^http\:\/\/share\.vrs\.sohu\.com\/my\/v\.swf.*&id=(\d+)/i', $url, $tempMatches);
+        $tempMatches = array();
+        preg_match('/^http\:\/\/share\.vrs\.sohu\.com\/my\/v\.swf.*&id=(\d+)/i', $video, $tempMatches);
         if (!empty($tempMatches)) {
             $url = 'http://my.tv.sohu.com/play/videonew.do?vid=' . $tempMatches[1];
-            $videonew = json_decode(file_get_contents($url), true);
-            return 'http://tv.sohu.com/upload/static/share/share_play.html#' . $tempMatches[1] . '_' . $videonew['pid'] . '_0_9001_0';
+            $aa = self::url($url);
+            $aa = json_decode($aa, true);
+            $videoUrl = 'http://tv.sohu.com/upload/static/share/share_play.html#' . $tempMatches[1] . '_' . $aa['pid'] . '_0_9001_0';
         }
-        return $url;
+
+        return $videoUrl;
     }
 
     /**
