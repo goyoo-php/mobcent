@@ -229,6 +229,8 @@ class ProfileUtils
             $temp['required'] = (int)$set['required'];
             $temp['unchangeable'] = intval(!empty($space[$v]) ? $set['unchangeable'] : 0);
             $filterArray = array('residedist', 'birthdist', 'birthcommunity', 'birthyear', 'birthmonth', 'birthprovince', 'residecommunity', 'resideprovince');
+            $temp['description'] = strval($set['description']);
+            $temp['size'] = intval($set['size']);
 
             if (in_array($v, $filterArray))
             {
@@ -267,7 +269,6 @@ class ProfileUtils
                 $return[] = $temp;
             } else
             {
-                $set['description'] = (string)$set['description'];
                 $set['size'] = (int)$set['size'];
                 if ($set['formtype'] == 'file')
                 {
@@ -284,7 +285,6 @@ class ProfileUtils
                 } elseif ($set['formtype'] == 'select' || $set['formtype'] == 'list' || $set['formtype'] == 'checkbox' || $set['formtype'] == 'radio')
                 {
                     $temp['name'] = $set['title'];
-                    $temp['description'] = $set['description'];
                     $temp['type'] = $set['formtype'];
                     $temp['size'] = $set['size'];
                     $temp['choices'] = explode("\n", $set['choices']);
@@ -293,7 +293,6 @@ class ProfileUtils
                 } elseif ($set['formtype'] == 'text' || $set['formtype'] == 'textarea')
                 {
                     $temp['name'] = $set['title'];
-                    $temp['description'] = $set['description'];
                     $temp['type'] = $set['formtype'] == 'textarea' ? 'texta' : $set['formtype'];
                     $temp['size'] = $set['size'];
                     $temp['nowSet'] = strval($space[$v]);

@@ -314,9 +314,8 @@ class PostListAction extends MobcentAction
                 // }
                 $topicInfo['status'] = 1;
                 $topicInfo['reply_status'] = 1;
-
                 $topicInfo['flag'] = 0;
-                $topicInfo['gender'] = 1;
+                $topicInfo['gender'] = UserUtils::getUserGender($topicInfo['user_id']);;
                 $topicInfo['reply_posts_id'] = (int)$post['pid'];
                 $topicInfo['rateList'] = ForumUtils::topicRateList($post['pid']);
                 $tempnxx = array();

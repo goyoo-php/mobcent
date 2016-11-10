@@ -406,7 +406,7 @@ class TopicListAction extends MobcentAction {
             $topicInfo['gender'] = (int)UserUtils::getUserGender($topic['authorid']);
             $topicInfo['userTitle'] = UserUtils::getUserTitle($topicInfo['user_id']);
             $topicInfo['recommendAdd'] = (int)ForumUtils::getRecommendAdd($tid);
-           // $topicInfo['special'] = (int)$topic['special'];
+            $topicInfo['special'] = (int)$topic['special'];
             $topicInfo['isHasRecommendAdd'] = ForumUtils::isHasRecommendAdd($tid);
             $topicInfo['imageList'] = (array)$topicSummary['imageList'];
             $topicInfo['sourceWebUrl'] = (string)ForumUtils::getSourceWebUrl($tid, 'topic');

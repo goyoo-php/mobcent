@@ -17,7 +17,6 @@ class NewsViewAction extends MobcentAction {
     public function run($json) {
         $res = $this->initWebApiArray();
 
-        // $json = '{"aid": 10, "page": 1}';
         $json = rawurldecode($json);
         $json = WebUtils::jsonDecode($json);
 
@@ -137,8 +136,19 @@ class NewsViewAction extends MobcentAction {
         if($bbcode) {
             $newsInfo['html-content'] = PortalUtils::getNewsContentHtml($article, $page );
         }
+
+        $user = $this->getUserInfo($newsInfo['uid']);
+        $newsInfo = array_merge($newsInfo,$user);
         $newsInfo['content'] = $this->_transContent(PortalUtils::getNewsContent($article, $page));
 
+        return $newsInfo;
+    }
+
+    private function getUserInfo($uid)
+    {
+        $newsInfo['avatar'] = UserUtils::getUserAvatar($uid);
+        $newsInfo['gender'] = UserUtils::getUserGender($uid);
+        $newsInfo['uid']    = $uid;
         return $newsInfo;
     }
 

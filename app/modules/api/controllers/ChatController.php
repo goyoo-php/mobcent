@@ -49,6 +49,39 @@ class ChatController extends ApiController
         }
         $this->setData(array('userlist' => $outdata));
     }
+
+    //加入聊天室
+    public function actionInRoom()
+    {
+        //错误码  110 00000参数错误  110 00001还用户已进入聊天室  110 00002进入聊天室失败
+        if(!($this->data['uid'] && $this->data['cid'])) {
+            $this->error('11000000');
+        }
+        $inroom = $this->db->queryScalar('SELECT COUNT(*) FROM %t WHERE `cid`=%d AND `uid` =%d',array('appbyme_chatuser', $this->data['cid'], $this->data['uid']));
+        if(intval($inroom)) {
+            $this->error('11000001');
+        }
+        $re = $this->db->insert('appbyme_chatuser',array(
+            'uid' => intval($this->data['uid']),
+            'uname' => strval($this->data['uname']),
+            'uavatar' => strval($this->data['avatar']),
+            'cid' => intval($this->data['cid'])
+        ));
+        if(!$re) {
+            $this->error('11000002');
+        }
+    }
+    //退出聊天室
+    public function actionOutRoom()
+    {
+        if(!($this->data['uid'] && $this->data['cid'])) {
+            $this->error('11000000');
+        }
+        $this->db->delete('appbyme_chatuser',array(
+            'uid' => $this->data['uid'],
+            'cid' => $this->data['cid']
+        ));
+    }
     protected function setRules()
     {
         return array(

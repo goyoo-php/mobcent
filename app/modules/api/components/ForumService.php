@@ -188,6 +188,7 @@ class ForumService
     public function addLiveUser()
     {
         $this->username = $this->data['username'];
+        $this->username = WebUtils::t(urldecode($_GET['username']));
         $password = isset($this->data['password']) ? $this->data['password'] : 'dSDA@123a';
         $email = rawurldecode($this->data['email']);
         $regInfo = UserUtils::register($this->username, $password, $email, 'general', 1);
@@ -196,9 +197,6 @@ class ForumService
         }
         $this->uid = $regInfo['info']['uid'];
         $res = $this->addSpecial();
-        if($res) {
-            $this->setUsername();
-        }
         return $res;
     }
 
@@ -254,6 +252,8 @@ class ForumService
     }
     private function getAvatar()
     {
+        global $_G;
+        $_G['siteurl'] = substr($_G['siteurl'], 0, -16);
         return UserUtils::getUserAvatar($this->uid);
     }
 

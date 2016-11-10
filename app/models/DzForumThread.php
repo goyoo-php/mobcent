@@ -1081,9 +1081,7 @@ class DzForumThread extends DiscuzAR {
         );
         if($res) {
             $res += $count;
-            DbUtils::getDzDbUtils(true)->update(
-                'forum_thread',array('views' => $res),array('tid' => $tid)
-            );
+            C::t('forum_thread')->update($tid, array('views' => $res));
         }
         return $res;
     }

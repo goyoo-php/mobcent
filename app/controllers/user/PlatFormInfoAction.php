@@ -124,6 +124,9 @@ class PlatFormInfoAction extends MobcentAction {
     private function _wxInfo($res, $openId, $oauthToken, $platformId, $isValidation, $mobile, $code) {
         global $_G;
         $result = AppbymeConnection::getUserInfoFromWeiXin($openId, $oauthToken);
+        if(!empty($result['errcode'])){
+            return $this->makeErrorInfo($res,WebUtils::t('请求微信服务器错误,请重试'));
+        }
         if (!empty($result['unionid'])) {
             $wxLogin = AppbymeConnection::getMobcentWxinfoByUnionId($result['unionid']);
         }
